@@ -43,7 +43,7 @@
 - **GET /api/request?page=_**: Implemented paginated retrieval with descending date sort using MongoDB skip/limit
 
 #### Main Requirements
-- **GET /api/request?status=pending**: Added status filtering in the GET endpoint with client-side filtering after database fetch
+- **GET /api/request?status=pending**: Added status filtering in the GET endpoint with server-side database filtering using MongoDB queries
 - **PATCH /api/request**: Implemented single update endpoint that modifies request status and updates lastEditedDate
 
 #### Above and Beyond
@@ -58,35 +58,23 @@
 ### Frontend
 
 #### Minimum Requirements
-- **Dropdown Component**: Built reusable Dropdown component in `src/components/atoms/Dropdown.tsx` with controlled value and onChange props
-- **Table Component**: Created RequestsTable component in `src/components/tables/RequestsTable.tsx` with columns for Name, Item Requested, Created, Updated, and Status. Includes date formatting and empty state handling
+- **Dropdown Component**: Built reusable Dropdown component in `src/components/atoms/Dropdown.tsx` with controlled value and onChange props. Also created StatusDropdown component for displaying status badges in dropdown options
+- **Table Component**: Created RequestsTable component in `src/components/tables/RequestsTable.tsx` with columns for checkbox selection, Name, Item Requested, Created, Updated, and Status. Includes date formatting, empty state handling, and custom checkbox styling with light blue selection highlighting
 - **Base Page with API Integration**: Implemented `/admin` page that fetches data from `GET /api/request` on mount using React hooks. Displays loading state during fetch and error messages on failure
-- **Dropdown Interactivity**: Status dropdowns in table trigger `PATCH /api/request` API calls to update request status in database. Updates are reflected in UI with proper error handling
+- **Dropdown Interactivity**: StatusDropdown at top of table allows batch status updates via `PATCH /api/request` API calls. Individual statuses displayed as read-only color-coded badges in the table. Updates are reflected in UI with proper error handling
 
 #### Main Requirements
 - **Tabs**: Added status filter tabs (All, Pending, Approved, Completed, Rejected) with visual styling. Selected tab filters displayed requests. Tabs styled as rounded rectangular blocks with active state showing blue background and white text
 - **Pagination**: Implemented full pagination with Pagination component from `src/components/molecules/Pagination.tsx`. Shows page count and navigation arrows. Automatically resets to page 1 when changing tabs or adding new requests. Backend returns total count for accurate pagination display
 
 #### Above and Beyond
-- **Batch Edit**: Added checkbox column for selecting multiple requests. "Batch Edit" button at top right of table prompts user for new status and updates all selected requests via batch PATCH API. Shows success/failure count and refreshes list
-- **Batch Delete**: "Batch Delete" button deletes all selected requests with confirmation dialog via batch DELETE API. Shows success/failure count and refreshes list. Selection cleared after operations and when changing pages/tabs
-
-**Key Features**:
-- Loading states with "Loading requests..." message
-- Error handling with user-friendly alert messages
-- Form validation (name: 3-30 chars, item: 2-100 chars)
-- Automatic list refresh after creating requests
-- Date formatting (Mon DD, YYYY)
-- Responsive table with horizontal scroll on mobile
-- Hover effects on table rows and tab buttons
-- Checkbox selection with select-all functionality (indeterminate state when some selected)
-- Batch operation buttons show selected count and are disabled when nothing is selected
-- Selection automatically cleared when changing pages or tabs
+- **Batch Edit**: Added checkbox column for selecting multiple requests. StatusDropdown labeled "Mark as" at top right of table updates all selected requests immediately when a new status is chosen via batch PATCH API. Updates are reflected in UI with proper error handling and list refresh
+- **Batch Delete**: Trash icon button deletes all selected requests via batch DELETE API without confirmation. Shows error alert on failure and refreshes list. Selection cleared after operations and when changing pages/tabs
 
 ## Documentation
 
 ### Setup
-- Set `MONGODB_URI=mongodb://localhost:27017/bfs` in `.env`
+- Set `MONGODB_URI=mongodb://localhost:27017/bfg` in `.env`
 
 ### API Endpoints
 
@@ -191,8 +179,12 @@ Response format:
 
 #### Frontend
 - `src/app/admin/page.tsx` - Main admin page with form, tabs, table, and pagination
-- `src/components/tables/RequestsTable.tsx` - Reusable table component
+- `src/app/cool/page.tsx` - Personal portfolio page
+- `src/components/tables/RequestsTable.tsx` - Reusable table component with selection
 - `src/components/molecules/Pagination.tsx` - Reusable pagination component
 - `src/components/atoms/Dropdown.tsx` - Reusable dropdown component
+- `src/components/atoms/StatusDropdown.tsx` - Status dropdown with badge options
+- `src/components/atoms/StatusBadge.tsx` - Color-coded status badge component
 - `src/components/atoms/Button.tsx` - Reusable button component
 - `src/components/atoms/Input.tsx` - Reusable input component
+- `src/components/icons/TrashIcon.tsx` - Trash can icon for delete operations
